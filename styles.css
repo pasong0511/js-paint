@@ -62,3 +62,13 @@ body {
 .controls .controls__range {
     margin-bottom: 20px;
 }
+
+
+#inputPicker {
+    opacity: 0;
+    cursor: pointer;
+}
+
+#jsNowColor {
+    border-radius: 12px;
+}

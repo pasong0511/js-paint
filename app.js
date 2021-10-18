@@ -6,10 +6,11 @@ const mode = document.getElementById("jsMode");
 const saveBtn = document.getElementById("jsSave");
 const clearBtn = document.getElementById("jsClear");
 const BrushBtn = document.getElementById("jsBrush");
+const colorPicker = document.getElementById("inputPicker");
+const nowColor = document.getElementById("jsNowColor");
 
-const circle = document.getElementById("jsCircle");
-const triangle = document.getElementById("jsTriangle");
-const rectangle = document.getElementById("jsRectangle");
+const circleBtn = document.getElementById("jsCircle");
+const rectangleBtn = document.getElementById("jsRectangle");
 
 const INITIAL_COLOR = "#2c2c2c";
 const CANVAS_SIZE_X = 900;
@@ -18,6 +19,7 @@ const CANVAS_SIZE_Y = 700;
 const DRAW_MODE = {
     BRUSH: "BRUSH",
     BOX: "BOX",
+    CIRCLE : "CIRCLE",
 };
 
 canvas.width = CANVAS_SIZE_X; //캔버스는 사이즈가 필요하다(CSS와 js 둘다 줘야함)
@@ -32,7 +34,6 @@ ctx.lineWidth = 2.5;
 
 let painting = false;
 let filling = false;
-let drag = false;
 
 let startX = 0;
 let startY = 0;
@@ -51,6 +52,12 @@ function handleMouseDown(event) {
 function handleMouseUp(event) {
     painting = false;
 
+    const nowCircle = {
+        X: Math.round((startX + event.offsetX) / 2),
+        Y: Math.round((startY + event.offsetY) / 2),
+        R: Math.round(Math.abs(event.offsetY - startY) / 2)
+    };
+
     if (drawMode === DRAW_MODE.BOX) {
         ctx.strokeRect(
         Math.min(startX, event.offsetX),
@@ -58,6 +65,11 @@ function handleMouseUp(event) {
         Math.abs(startX - event.offsetX),
         Math.abs(startY - event.offsetY)
         );
+    } else if (drawMode === DRAW_MODE.CIRCLE){
+        console.log("사이클 부분 실행");
+        ctx.beginPath();
+        ctx.arc(nowCircle.X, nowCircle.Y, nowCircle.R, 0, Math.PI * 2, true);
+        ctx.stroke();
     }
 }
 
@@ -81,8 +93,20 @@ function onMouseMove(event) {
 function handelColorClick(event) {
     const color = event.target.style.backgroundColor;
 
+    modifyColor(color);
+}
+
+function handleColorPickerClick(event) {
+    const color = colorPicker.value;   
+
+    modifyColor(color);
+}
+
+function modifyColor(color){
     ctx.strokeStyle = color; //색 변경해주기
     ctx.fillStyle = color;
+
+    nowColor.style.background = color;
 }
 
 function handleRangeChange(event) {
@@ -125,10 +149,14 @@ function handleClearClick(event) {
     ctx.clearRect(0, 0, CANVAS_SIZE_X, CANVAS_SIZE_Y);
 }
 
-//function handleShapeClick(startX, startY, endX, endY) {
-function handleRectangleClick() {
-  // ctx.strokeRect(startX, startY, endX, endY);
+function handleRectangleBtnClick() {
     drawMode = DRAW_MODE.BOX;
+}
+
+function handleCircleBtnClick() {
+    console.log("사이클");
+    drawMode = DRAW_MODE.CIRCLE;
+    console.log(drawMode);
 }
 
 function handleBrushClick() {
@@ -136,9 +164,9 @@ function handleBrushClick() {
 }
 
 if (canvas) {
-  canvas.addEventListener("mousemove", onMouseMove); //mousemove 마우스를 올렸을때
-  canvas.addEventListener("mousedown", handleMouseDown); //monusedown 마우스 한번 클릭 후 떼지 않을 때
-  canvas.addEventListener("mouseup", handleMouseUp); //mouseup 마우스클 한번 클릭하고 땔때
+    canvas.addEventListener("mousemove", onMouseMove); //mousemove 마우스를 올렸을때
+    canvas.addEventListener("mousedown", handleMouseDown); //monusedown 마우스 한번 클릭 후 떼지 않을 때
+    canvas.addEventListener("mouseup", handleMouseUp); //mouseup 마우스클 한번 클릭하고 땔때
     canvas.addEventListener("mouseleave", handleMouseUp);
     canvas.addEventListener("click", handleCanvasClick);
     canvas.addEventListener("contextmenu", handleContextMenu);
@@ -168,6 +196,14 @@ if(BrushBtn){
     BrushBtn.addEventListener("click", handleBrushClick);
 }
 
-if (rectangle) {
-    rectangle.addEventListener("click", handleRectangleClick);
+if(rectangleBtn) {
+    rectangleBtn.addEventListener("click", handleRectangleBtnClick);
+}
+
+if(circleBtn) {
+    circleBtn.addEventListener("click", handleCircleBtnClick);
+}
+
+if(colorPicker) {
+    colorPicker.addEventListener("change", handleColorPickerClick);
 }
