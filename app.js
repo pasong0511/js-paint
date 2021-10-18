@@ -9,8 +9,10 @@ const BrushBtn = document.getElementById("jsBrush");
 const colorPicker = document.getElementById("inputPicker");
 const nowColor = document.getElementById("jsNowColor");
 
+const lineBtn = document.getElementById("jsLine");
 const circleBtn = document.getElementById("jsCircle");
 const rectangleBtn = document.getElementById("jsRectangle");
+
 
 const INITIAL_COLOR = "#2c2c2c";
 const CANVAS_SIZE_X = 900;
@@ -20,6 +22,7 @@ const DRAW_MODE = {
     BRUSH: "BRUSH",
     BOX: "BOX",
     CIRCLE : "CIRCLE",
+    LINE : "LINE",
 };
 
 canvas.width = CANVAS_SIZE_X; //캔버스는 사이즈가 필요하다(CSS와 js 둘다 줘야함)
@@ -69,6 +72,13 @@ function handleMouseUp(event) {
         console.log("사이클 부분 실행");
         ctx.beginPath();
         ctx.arc(nowCircle.X, nowCircle.Y, nowCircle.R, 0, Math.PI * 2, true);
+        ctx.stroke();
+    } else if (drawMode === DRAW_MODE.LINE) {
+        console.log("라인 부분 실행");
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(event.offsetX, event.offsetY);
+        ctx.closePath();
         ctx.stroke();
     }
 }
@@ -163,6 +173,10 @@ function handleBrushClick() {
     drawMode = DRAW_MODE.BRUSH;
 }
 
+function handleLineClick() {
+    drawMode = DRAW_MODE.LINE;
+}
+
 if (canvas) {
     canvas.addEventListener("mousemove", onMouseMove); //mousemove 마우스를 올렸을때
     canvas.addEventListener("mousedown", handleMouseDown); //monusedown 마우스 한번 클릭 후 떼지 않을 때
@@ -206,4 +220,8 @@ if(circleBtn) {
 
 if(colorPicker) {
     colorPicker.addEventListener("change", handleColorPickerClick);
+}
+
+if(lineBtn) {
+    lineBtn.addEventListener("click", handleLineClick);
 }
